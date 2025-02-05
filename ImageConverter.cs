@@ -59,24 +59,25 @@ namespace CodeHelper
         /// <returns></returns>
         public static BitmapSource BitmapToBitmapSource(System.Drawing.Bitmap bitmap)
         {
-            //BitmapImage bitmapImage = new BitmapImage();
-            //using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
-            //{
-            //    bitmap.Save(ms, ImageFormat.Bmp);
-            //    bitmapImage.BeginInit();
-            //    bitmapImage.StreamSource = ms;
-            //    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-            //    bitmapImage.EndInit();
-            //    bitmapImage.Freeze();
-            //}
-            //bitmap.Dispose();
-            IntPtr ip = bitmap.GetHbitmap();//从GDI+ Bitmap创建GDI位图对象
+            BitmapImage bitmapImage = new BitmapImage();
+            using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+            {
+                bitmap.Save(ms, ImageFormat.Bmp);
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = ms;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+                bitmapImage.Freeze();
+            }
+            bitmap.Dispose();
+            GC.Collect();
+            //IntPtr ip = bitmap.GetHbitmap();//从GDI+ Bitmap创建GDI位图对象
 
-            BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(ip, IntPtr.Zero, Int32Rect.Empty,
-            System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
-            bitmapSource.Freeze();
-            DeleteObject(ip);//释放IntPtr,不然会引发内存泄漏
-            return bitmapSource;
+            //BitmapSource bitmapSource = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap(ip, IntPtr.Zero, Int32Rect.Empty,
+            //System.Windows.Media.Imaging.BitmapSizeOptions.FromEmptyOptions());
+            //bitmapSource.Freeze();
+            //DeleteObject(ip);//释放IntPtr,不然会引发内存泄漏
+            return bitmapImage;
         }
     }
 }
