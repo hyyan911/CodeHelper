@@ -1,5 +1,4 @@
-﻿using MathLib.NormalMath.Decimal;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -14,6 +13,21 @@ using System.Windows.Media.Media3D;
 //文件处理类
 namespace CodeHelper
 {
+    public class DataPoint
+    {
+        public List<double> Data = new List<double>();
+
+        public DataPoint(params double[] ps)
+        {
+            Data = ps.ToList();
+        }
+
+        public DataPoint(List<double> ps)
+        {
+            Data = ps.ToList();
+        }
+    }
+
     public class FileObject
     {
         /// <summary>
@@ -286,13 +300,13 @@ namespace CodeHelper
         /// <summary>
         /// 写入点数据
         /// </summary>
-        public void WritePointData(string dataname, List<RealPoint> data)
+        public void WritePointData(string dataname, List<DataPoint> data)
         {
             List<string> res = new List<string>();
             foreach (var item in data)
             {
                 string str = "";
-                foreach (var value in item.Content)
+                foreach (var value in item.Data)
                 {
                     str += value.ToString() + "☯";
                 }
@@ -433,13 +447,13 @@ namespace CodeHelper
         /// </summary>
         /// <param name="dataname"></param>
         /// <returns></returns>
-        public List<RealPoint> ExtractPoint(string dataname)
+        public List<DataPoint> ExtractPoint(string dataname)
         {
             for (int i = 0; i < DataAssemble.Count; i++)
             {
                 if (DataAssemble[i].Name == dataname)
                 {
-                    List<RealPoint> res = new List<RealPoint>();
+                    List<DataPoint> res = new List<DataPoint>();
                     for (int j = 0; j < DataAssemble[i].GetCount(); j++)
                     {
                         if (DataAssemble[i].Data[j].Contains("☯") == false)
@@ -447,12 +461,12 @@ namespace CodeHelper
                             continue;
                         }
                         string[] pointseg = DataAssemble[i].Data[j].Split('☯');
-                        RealPoint p = new RealPoint();
+                        DataPoint p = new DataPoint();
                         foreach (var item in pointseg)
                         {
                             try
                             {
-                                p.Content.Add(double.Parse(item));
+                                p.Data.Add(double.Parse(item));
                             }
                             catch (Exception) { }
                         }
@@ -461,7 +475,7 @@ namespace CodeHelper
                     return res;
                 }
             }
-            return new List<RealPoint>();
+            return new List<DataPoint>();
         }
 
         /// <summary>
@@ -502,7 +516,7 @@ namespace CodeHelper
 
                     if (DataAssemble[i].Data[0].Contains("☯"))
                     {
-                        return typeof(RealPoint);
+                        return typeof(DataPoint);
                     }
 
                     try

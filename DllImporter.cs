@@ -62,5 +62,13 @@ namespace CodeHelper
             }
         }
 
+        /// <summary>
+        /// 获取处理器架构
+        /// </summary>
+        /// <returns></returns>
+        public static Architecture GetArchitecture()
+        {
+            return System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture;
+        }
     }
 }
