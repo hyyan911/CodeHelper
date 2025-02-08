@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="ColorHelper.cs" />
     <Compile Include="ControlEventHelper.cs" />
+    <Compile Include="DllImporter.cs" />
     <Compile Include="FileObject.cs" />
     <Compile Include="ImageConverter.cs" />
     <Compile Include="MouseColorHelper.cs" />
