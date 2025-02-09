@@ -68,6 +68,8 @@ namespace CodeHelper
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
+                ms.Flush();
+                ms.Close();
             }
             bitmap.Dispose();
             GC.Collect();
