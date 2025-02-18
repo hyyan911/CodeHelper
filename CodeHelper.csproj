@@ -49,6 +49,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassHelper.cs" />
     <Compile Include="ColorHelper.cs" />
     <Compile Include="ControlEventHelper.cs" />
     <Compile Include="DllImporter.cs" />
