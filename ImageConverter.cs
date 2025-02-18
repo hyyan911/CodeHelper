@@ -127,6 +127,7 @@ namespace CodeHelper
                 }
                 // 锁定 WriteableBitmap 的像素区域
                 sourceptr = source.BackBuffer;
+                source.Lock();
             });
 
             // 将 Bitmap 数据复制到 WriteableBitmap
@@ -140,14 +141,13 @@ namespace CodeHelper
 
             byte[] bitmapBytes = new byte[byteCount];
             System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, bitmapBytes, 0, byteCount);
+            if (sourceptr != IntPtr.Zero)
+                System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, sourceptr, byteCount);
 
             // 解锁 Bitmap 和 WriteableBitmap
             bmp.UnlockBits(bitmapData);
             Application.Current.Dispatcher.Invoke(() =>
             {
-                source.Lock();
-                if (sourceptr != IntPtr.Zero)
-                    System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, sourceptr, byteCount);
                 source.AddDirtyRect(new Int32Rect(0, 0, bmp.Width, bmp.Height));
                 source.Unlock();
             });
