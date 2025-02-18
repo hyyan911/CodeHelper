@@ -117,14 +117,17 @@ namespace CodeHelper
             if (bmp == null) return null;
 
             bool IsFormatEqual = false;
-
-            if (source == null || bmp.Width != source.PixelWidth || bmp.Height != source.PixelHeight || bmp.HorizontalResolution != source.DpiX || bmp.VerticalResolution != source.DpiY
-                || ConvertPixelFormatToWpfPixelFormat(bmp.PixelFormat) != source.Format)
+            IntPtr sourceptr = IntPtr.Zero;
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                source = new WriteableBitmap(bmp.Width, bmp.Height, bmp.HorizontalResolution, bmp.VerticalResolution, ConvertPixelFormatToWpfPixelFormat(bmp.PixelFormat), null);
-            }
-            // 锁定 WriteableBitmap 的像素区域
-            source.Lock();
+                if (source == null || bmp.Width != source.PixelWidth || bmp.Height != source.PixelHeight || bmp.HorizontalResolution != source.DpiX || bmp.VerticalResolution != source.DpiY
+                || ConvertPixelFormatToWpfPixelFormat(bmp.PixelFormat) != source.Format)
+                {
+                    source = new WriteableBitmap(bmp.Width, bmp.Height, bmp.HorizontalResolution, bmp.VerticalResolution, ConvertPixelFormatToWpfPixelFormat(bmp.PixelFormat), null);
+                }
+                // 锁定 WriteableBitmap 的像素区域
+                sourceptr = source.BackBuffer;
+            });
 
             // 将 Bitmap 数据复制到 WriteableBitmap
             System.Drawing.Imaging.BitmapData bitmapData = bmp.LockBits(
@@ -138,11 +141,16 @@ namespace CodeHelper
             byte[] bitmapBytes = new byte[byteCount];
             System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, bitmapBytes, 0, byteCount);
 
-            System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, source.BackBuffer, byteCount);
-
             // 解锁 Bitmap 和 WriteableBitmap
             bmp.UnlockBits(bitmapData);
-            source.Unlock();
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                source.Lock();
+                if (sourceptr != IntPtr.Zero)
+                    System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, sourceptr, byteCount);
+                source.AddDirtyRect(new Int32Rect(0, 0, bmp.Width, bmp.Height));
+                source.Unlock();
+            });
 
             return source;
         }
