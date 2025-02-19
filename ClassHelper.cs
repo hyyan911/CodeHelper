@@ -12,7 +12,7 @@ namespace CodeHelper
     public class ClassHelper
     {
         /// <summary>
-        /// C#获取一个类在其所在的程序集中的所有子类
+        /// C#获取一个类在其所在的程序集中的所有实例子类
         /// </summary>
         /// <param name="parentType">给定的类型</param>
         /// <returns>所有子类的名称</returns>
@@ -28,6 +28,10 @@ namespace CodeHelper
                 {
                     if (baseType.Name == parentType.Name)//如果基类就是给定的父类
                     {
+                        if (itemType.IsAbstract)
+                        {
+                            subTypeList.AddRange(GetSubClassTypes(itemType));
+                        }
                         subTypeList.Add(itemType);//加入子类表中
                     }
                 }
