@@ -32,7 +32,10 @@ namespace CodeHelper
                         {
                             subTypeList.AddRange(GetSubClassTypes(itemType));
                         }
-                        subTypeList.Add(itemType);//加入子类表中
+                        else
+                        {
+                            subTypeList.Add(itemType);//加入子类表中
+                        }
                     }
                 }
             }
