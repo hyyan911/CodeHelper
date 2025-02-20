@@ -118,6 +118,7 @@ namespace CodeHelper
 
             bool IsFormatEqual = false;
             IntPtr sourceptr = IntPtr.Zero;
+            bool locksucceed = true;
             Application.Current.Dispatcher.Invoke(() =>
             {
                 if (source == null || bmp.Width != source.PixelWidth || bmp.Height != source.PixelHeight || bmp.HorizontalResolution != source.DpiX || bmp.VerticalResolution != source.DpiY
@@ -125,32 +126,40 @@ namespace CodeHelper
                 {
                     source = new WriteableBitmap(bmp.Width, bmp.Height, bmp.HorizontalResolution, bmp.VerticalResolution, ConvertPixelFormatToWpfPixelFormat(bmp.PixelFormat), null);
                 }
-                // 锁定 WriteableBitmap 的像素区域
-                sourceptr = source.BackBuffer;
-                source.Lock();
             });
-
-            // 将 Bitmap 数据复制到 WriteableBitmap
-            System.Drawing.Imaging.BitmapData bitmapData = bmp.LockBits(
-                new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                System.Drawing.Imaging.ImageLockMode.ReadOnly,
-                bmp.PixelFormat);
-
-            int bytesPerPixel = Bitmap.GetPixelFormatSize(bmp.PixelFormat) / 8;
-            int byteCount = bitmapData.Stride * bmp.Height;
-
-            byte[] bitmapBytes = new byte[byteCount];
-            System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, bitmapBytes, 0, byteCount);
-            if (sourceptr != IntPtr.Zero)
-                System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, sourceptr, byteCount);
-
-            // 解锁 Bitmap 和 WriteableBitmap
-            bmp.UnlockBits(bitmapData);
-            Application.Current.Dispatcher.Invoke(() =>
+            try
             {
-                source.AddDirtyRect(new Int32Rect(0, 0, bmp.Width, bmp.Height));
-                source.Unlock();
-            });
+                if (locksucceed)
+                {
+                    // 将 Bitmap 数据复制到 WriteableBitmap
+                    System.Drawing.Imaging.BitmapData bitmapData = bmp.LockBits(
+                        new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
+                        System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                        bmp.PixelFormat);
+
+                    int bytesPerPixel = Bitmap.GetPixelFormatSize(bmp.PixelFormat) / 8;
+                    int byteCount = bitmapData.Stride * bmp.Height;
+
+                    byte[] bitmapBytes = new byte[byteCount];
+                    System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, bitmapBytes, 0, byteCount);
+                    // 锁定 WriteableBitmap 的像素区域
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        bool res = source.TryLock(TimeSpan.FromMilliseconds(100));
+                        if (res == false)
+                        {
+                            locksucceed = false;
+                        }
+                        sourceptr = source.BackBuffer;
+                        if (sourceptr != IntPtr.Zero)
+                            System.Runtime.InteropServices.Marshal.Copy(bitmapBytes, 0, sourceptr, byteCount);
+                        source.AddDirtyRect(new Int32Rect(0, 0, bmp.Width, bmp.Height));
+                        source.Unlock();
+                    });
+                    bmp.UnlockBits(bitmapData);
+                }
+            }
+            catch (Exception ex) { }
 
             return source;
         }
