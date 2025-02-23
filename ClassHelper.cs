@@ -26,7 +26,7 @@ namespace CodeHelper
                 var baseType = itemType.BaseType;//获取元素类型的基类
                 if (baseType != null)//如果有基类
                 {
-                    if (baseType.Name == parentType.Name)//如果基类就是给定的父类
+                    if (baseType.FullName == parentType.FullName)//如果基类就是给定的父类
                     {
                         if (itemType.IsAbstract)
                         {
