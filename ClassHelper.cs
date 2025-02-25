@@ -23,23 +23,18 @@ namespace CodeHelper
             var assemblyAllTypes = assembly.GetTypes();//获取该程序集中的所有类型
             foreach (var itemType in assemblyAllTypes)//遍历所有类型进行查找
             {
+                if (itemType.IsAbstract) continue;
                 var baseType = itemType.BaseType;//获取元素类型的基类
-                if (baseType != null)//如果有基类
+                while (baseType != null && baseType.FullName != parentType.FullName)//如果有基类
                 {
-                    if (baseType.FullName == parentType.FullName)//如果基类就是给定的父类
-                    {
-                        if (itemType.IsAbstract)
-                        {
-                            subTypeList.AddRange(GetSubClassTypes(itemType));
-                        }
-                        else
-                        {
-                            subTypeList.Add(itemType);//加入子类表中
-                        }
-                    }
+                    baseType = baseType.BaseType;
+                }
+                if (baseType != null)
+                {
+                    subTypeList.Add(itemType);//加入子类表中
                 }
             }
             return subTypeList;//获取所有子类类型的名称
         }
-    }
+}
 }

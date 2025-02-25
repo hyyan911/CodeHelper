@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Windows.Shapes;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using Point = System.Windows.Point;
+using Controls;
 
 namespace CodeHelper
 {
@@ -23,7 +24,7 @@ namespace CodeHelper
         /// 对给定窗口注册缩放事件
         /// </summary>
         /// <param name="window"></param>
-        public void RegisterWindow(Window window, double resizeThickness = 4, double dragHeight = 20)
+        public void RegisterWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, double resizeThickness = 4, double dragHeight = 20)
         {
             ResizeThickness = resizeThickness;
             this.DragHeight = dragHeight;
@@ -33,6 +34,57 @@ namespace CodeHelper
             window.PreviewMouseLeftButtonDown += Window_MouseDown;
             window.PreviewMouseLeftButtonUp += Window_MouseUp;
             window.MouseMove += Window_MouseMove;
+            if (minimunBtn != null)
+            {
+                minimunBtn.Click -= Minimize;
+                minimunBtn.Click += Minimize;
+            }
+            if (maximunBtn != null)
+            {
+                maximunBtn.Click -= Maximize;
+                maximunBtn.Click += Maximize;
+            }
+            if (closeBtn != null)
+            {
+                closeBtn.Click -= Close;
+                closeBtn.Click += Close;
+            }
+        }
+
+        private void Close(object sender, RoutedEventArgs e)
+        {
+            window.Close();
+        }
+
+        /// <summary>
+        /// 最小化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Minimize(object sender, RoutedEventArgs e)
+        {
+            window.WindowState = WindowState.Minimized;
+        }
+
+        /// <summary>
+        /// 最小化
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Maximize(object sender, RoutedEventArgs e)
+        {
+            if (window.WindowState == WindowState.Maximized)
+            {
+                window.WindowState = WindowState.Normal;
+                return;
+            }
+            if (window.WindowState == WindowState.Normal)
+            {
+                window.MaxHeight = SystemParameters.WorkArea.Height;
+                window.MaxWidth = SystemParameters.WorkArea.Width;
+                window.WindowState = WindowState.Maximized;
+                return;
+            }
         }
 
         /// <summary>
