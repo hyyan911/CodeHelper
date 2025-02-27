@@ -165,22 +165,30 @@ namespace CodeHelper
                         // 根据鼠标移动的位置调整窗口大小
                         window.Left += deltaX;
                         currentPosition = new Point(currentPosition.X - deltaX, currentPosition.Y);
-                        window.Width = Double.IsNaN(window.ActualWidth) ? window.Width - deltaX : window.ActualWidth - deltaX;
+                        var width = double.IsNaN(window.ActualWidth) ? window.Width - deltaX : window.ActualWidth - deltaX;
+                        if (width < 0) width = 10;
+                        window.Width = width;
                     }
                     if (isResizingRight)
                     {
                         // 根据鼠标移动的位置调整窗口大小
-                        window.Width = Double.IsNaN(window.ActualWidth) ? window.Width + deltaX : window.ActualWidth + deltaX;
+                        var width = double.IsNaN(window.ActualWidth) ? window.Width + deltaX : window.ActualWidth + deltaX;
+                        if (width < 0) width = 10;
+                        window.Width = width;
                     }
                     if (isResizingTop)
                     {
                         window.Top += deltaY;
                         currentPosition = new Point(currentPosition.X, currentPosition.Y - deltaY);
-                        window.Height = Double.IsNaN(window.ActualHeight) ? window.Height - deltaY : window.ActualHeight - deltaY;
+                        var height = double.IsNaN(window.ActualHeight) ? window.Height - deltaY : window.ActualHeight - deltaY;
+                        if (height < 0) height = 10;
+                        window.Height = height;
                     }
                     if (isResizingBottom)
                     {
-                        window.Height = Double.IsNaN(window.ActualHeight) ? window.Height + deltaY : window.ActualHeight + deltaY;
+                        var height = double.IsNaN(window.ActualHeight) ? window.Height + deltaY : window.ActualHeight + deltaY;
+                        if (height < 0) height = 10;
+                        window.Height = height;
                     }
 
                     // 更新点击位置
