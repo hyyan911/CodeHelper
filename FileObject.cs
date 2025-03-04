@@ -135,7 +135,7 @@ namespace CodeHelper
                         {
                             //处理描述内容
                             string[] dess = segs[i].Split('★');
-                            des.Add(dess[0].Trim(), dess[1].Trim());
+                            des.Add(ConvertUserdatFormatToContent(dess[0].Trim()), ConvertUserdatFormatToContent(dess[1].Trim()));
                         }
                     }
                 }
@@ -198,7 +198,7 @@ namespace CodeHelper
                     {
                         throw new FileFormatException("文件描述中不能存在空字符串");
                     }
-                    sw.WriteLine(disc.Key + "★" + disc.Value);
+                    sw.WriteLine(ConvertContentToUserdatFormat(disc.Key) + "★" + ConvertContentToUserdatFormat(disc.Value));
                 }
                 sw.WriteLine("userdata description ending line");
                 int datacount = 0;
