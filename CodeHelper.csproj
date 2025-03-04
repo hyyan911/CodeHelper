@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Controls">
-      <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
+      <HintPath>..\Controls\Controls\bin\x86\Debug\Controls.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

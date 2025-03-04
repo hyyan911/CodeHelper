@@ -63,12 +63,12 @@ namespace CodeHelper
                     {
                         if (segs[i].Contains("data name line"))
                         {
-                            List<string> datanames = segs[i].Trim().Split('★').ToList();
+                            List<string> datanames = ConvertUserdatFormatToContent(segs[i].Trim()).Split('★').ToList();
                             datanames.RemoveAt(0);
                             obj.DataNames = datanames;
                             for (int i2 = 0; i2 < datanames.Count; i2++)
                             {
-                                obj.DataAssemble.Add(new FileData(datanames[i2], new List<string>()));
+                                obj.DataAssemble.Add(new FileData(ConvertUserdatFormatToContent(datanames[i2]), new List<string>()));
                             }
                             continue;
                         }
@@ -81,7 +81,7 @@ namespace CodeHelper
                         {
                             //处理描述内容
                             string[] dess = segs[i].Split('★');
-                            obj.Descriptions.Add(dess[0].Trim(), dess[1].Trim());
+                            obj.Descriptions.Add(ConvertUserdatFormatToContent(dess[0].Trim()), ConvertUserdatFormatToContent(dess[1].Trim()));
                         }
                         if (IsIndata)
                         {
@@ -91,7 +91,7 @@ namespace CodeHelper
                             for (int i2 = 0; i2 < obj.DataAssemble.Count; i2++)
                             {
                                 if (dess[i2].Trim() != "❤")
-                                    obj.DataAssemble[i2].Data.Add(dess[i2].Trim());
+                                    obj.DataAssemble[i2].Data.Add(ConvertUserdatFormatToContent(dess[i2].Trim()));
                             }
                         }
                     }
@@ -184,6 +184,16 @@ namespace CodeHelper
                     {
                         throw new FileFormatException("☯为限定符，请确保文件的描述和数据中不包含☯字符");
                     }
+                    //\n字符
+                    if (disc.Key.Contains("■") || disc.Key.Contains("■"))
+                    {
+                        throw new FileFormatException("■为限定符，请确保文件的描述和数据中不包含☯字符");
+                    }
+                    //\r字符
+                    if (disc.Key.Contains("●") || disc.Key.Contains("●"))
+                    {
+                        throw new FileFormatException("■为限定符，请确保文件的描述和数据中不包含☯字符");
+                    }
                     if (string.IsNullOrEmpty(disc.Key) || string.IsNullOrEmpty(disc.Key))
                     {
                         throw new FileFormatException("文件描述中不能存在空字符串");
@@ -205,7 +215,7 @@ namespace CodeHelper
                         throw new FileFormatException("数据集名称中不能存在空字符串");
                     datanames += DataAssemble[i].Name + "★";
                 }
-                datanames = datanames.Remove(datanames.Length - 1, 1);
+                datanames = ConvertContentToUserdatFormat(datanames.Remove(datanames.Length - 1, 1));
                 sw.WriteLine(datanames);
                 List<int> maxcount = new List<int>() { 0 };
                 foreach (var item in DataAssemble)
@@ -224,7 +234,7 @@ namespace CodeHelper
                         }
                         else
                         {
-                            tempseg += DataAssemble[j].Data[i] + "★";
+                            tempseg += ConvertContentToUserdatFormat(DataAssemble[j].Data[i]) + "★";
                         }
                     }
                     tempseg = tempseg.Remove(tempseg.Length - 1, 1);
@@ -233,6 +243,16 @@ namespace CodeHelper
 
                 sw.WriteLine("end of file");
             }
+        }
+
+        private static string ConvertContentToUserdatFormat(string raw)
+        {
+            return raw.Replace("\n", "■").Replace("\r", "●");
+        }
+
+        private static string ConvertUserdatFormatToContent(string format)
+        {
+            return format.Replace("■", "\n").Replace("●", "\r");
         }
 
         /// <summary>
@@ -468,7 +488,10 @@ namespace CodeHelper
                             {
                                 p.Data.Add(double.Parse(item));
                             }
-                            catch (Exception) { }
+                            catch (Exception)
+                            {
+                                p.Data.Add(double.NaN);
+                            }
                         }
                         res.Add(p);
                     }
