@@ -31,6 +31,11 @@ namespace CodeHelper
     public class FileObject
     {
         /// <summary>
+        /// 文件路径
+        /// </summary>
+        public string FilePath { get; set; } = "";
+
+        /// <summary>
         /// 内容描述
         /// </summary>
         public Dictionary<string, string> Descriptions { get; set; } = new Dictionary<string, string>();
@@ -54,6 +59,7 @@ namespace CodeHelper
                 using (StreamReader reader = new StreamReader(File.OpenRead(filepath)))
                 {
                     FileObject obj = new FileObject();
+                    obj.FilePath = filepath;
                     string str = reader.ReadToEnd();
                     List<string> segs = str.Trim().Split('\n').ToList();
                     if (segs.Last() != "end of file") throw new FileFormatException("文件格式损坏：内容不完整");
