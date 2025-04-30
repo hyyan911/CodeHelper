@@ -393,7 +393,7 @@ namespace CodeHelper
                         {
                             throw new FormatException("指定数据集是日期格式,无法转换成double类型");
                         }
-                        res.Add(double.Parse(DataAssemble[i].Data[j]));
+                        res.Add(ParseDouble(DataAssemble[i].Data[j]));
                     }
                     return res;
                 }
@@ -467,6 +467,14 @@ namespace CodeHelper
             return new List<DateTime>();
         }
 
+        private double ParseDouble(string str)
+        {
+            if (str == "NaN" || str == "非数字") return double.NaN;
+            else
+            {
+                return double.Parse(str);
+            }
+        }
 
         /// <summary>
         /// 从数据集中抽取点
@@ -492,7 +500,7 @@ namespace CodeHelper
                         {
                             try
                             {
-                                p.Data.Add(double.Parse(item));
+                                p.Data.Add(ParseDouble(item));
                             }
                             catch (Exception)
                             {
@@ -531,7 +539,7 @@ namespace CodeHelper
                     if (DataAssemble[i].Data.Count == 0) return null;
                     try
                     {
-                        double.Parse(DataAssemble[i].Data[0]);
+                        ParseDouble(DataAssemble[i].Data[0]);
                         return typeof(double);
                     }
                     catch (Exception) { }
