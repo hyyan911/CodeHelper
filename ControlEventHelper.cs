@@ -36,7 +36,6 @@ namespace CodeHelper
 
             element.MouseLeftButtonDown += Click_Event;
             element.MouseLeftButtonDown += DClick_Event;
-            element.MouseLeftButtonDown += DClick_2_Event;
             element.MouseLeftButtonUp += Click_Up_Event;
         }
 
@@ -45,7 +44,7 @@ namespace CodeHelper
         private void Click_Up_Event(object sender, MouseButtonEventArgs e)
         {
             clickTime = e.Timestamp - clickTime;
-            if (clickTime < 300)
+            if (clickTime < 500)
             {
                 Click?.Invoke(element, e);
             }
@@ -56,19 +55,25 @@ namespace CodeHelper
             clickTime = e.Timestamp;
         }
 
-        private int doubleClickTime = 0;
-        private void DClick_2_Event(object sender, MouseButtonEventArgs e)
-        {
-            doubleClickTime = e.Timestamp - doubleClickTime;
-            if (doubleClickTime < 300)
-            {
-                MouseDoubleClick?.Invoke(element, e);
-            }
-        }
+        private bool isDoubleClick = false;
+        private int firstClickTime = 0;
 
         private void DClick_Event(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            doubleClickTime = e.Timestamp;
+            if (isDoubleClick == false)
+            {
+                firstClickTime = e.Timestamp;
+                isDoubleClick = true;
+                return;
+            }
+            else
+            {
+                if (e.Timestamp - firstClickTime < 300)
+                {
+                    MouseDoubleClick?.Invoke(element, e);
+                }
+                isDoubleClick = false;
+            }
         }
     }
 }

@@ -24,6 +24,29 @@ namespace CodeHelper
 
         private Brush PB { get; set; } = null;
 
+        private Brush KPB { get; set; } = null;
+
+        private FrameworkElement targetControl = null;
+
+        private bool AllowKeep { get; set; }
+
+        private bool keeppress = false;
+        public bool KeepPressed
+        {
+            get { return keeppress; }
+            set
+            {
+                if (value && AllowKeep)
+                {
+                    SetColor(targetControl, KPB);
+                }
+                if (!value && AllowKeep)
+                {
+                    SetColor(targetControl, IB);
+                }
+                keeppress = value;
+            }
+        }
 
         /// <summary>
         /// 初始化
@@ -31,11 +54,13 @@ namespace CodeHelper
         /// <param name="InitBackground"></param>
         /// <param name="MoveBackground"></param>
         /// <param name="PressedBackground"></param>
-        public MouseColorHelper(Brush InitBackground, Brush MoveBackground, Brush PressedBackground)
+        public MouseColorHelper(Brush InitBackground, Brush MoveBackground, Brush PressedBackground, bool allowKeepPressed = false, Brush KeepPressedColor = null)
         {
             IB = InitBackground;
             MB = MoveBackground;
             PB = PressedBackground;
+            KPB = KeepPressedColor;
+            AllowKeep = allowKeepPressed;
         }
 
         private void SetColor(FrameworkElement ele, Brush b)
@@ -68,6 +93,7 @@ namespace CodeHelper
         /// <param name="target"></param>
         public void RegistateTarget(FrameworkElement target)
         {
+            targetControl = target;
             target.PreviewMouseLeftButtonDown -= PressedEvent;
             target.PreviewMouseLeftButtonUp -= UpEvent;
             target.MouseEnter -= MoveEvent;
@@ -96,19 +122,23 @@ namespace CodeHelper
 
         private void PressedEvent(object sender, MouseButtonEventArgs e)
         {
-            SetColor(sender as FrameworkElement, PB);
+            if (!(AllowKeep && KeepPressed))
+                SetColor(sender as FrameworkElement, PB);
         }
         private void MoveEvent(object sender, MouseEventArgs e)
         {
-            SetColor(sender as FrameworkElement, MB);
+            if (!(AllowKeep && KeepPressed))
+                SetColor(sender as FrameworkElement, MB);
         }
         private void LeaveEvent(object sender, MouseEventArgs e)
         {
-            SetColor(sender as FrameworkElement, IB);
+            if (!(AllowKeep && KeepPressed))
+                SetColor(sender as FrameworkElement, IB);
         }
         private void UpEvent(object sender, MouseButtonEventArgs e)
         {
-            SetColor(sender as FrameworkElement, MB);
+            if (!(AllowKeep && KeepPressed))
+                SetColor(sender as FrameworkElement, MB);
         }
     }
 }
