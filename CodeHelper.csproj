@@ -36,6 +36,12 @@
     <Reference Include="Controls">
       <HintPath>..\Controls\Controls\bin\x64\Debug\Controls.dll</HintPath>
     </Reference>
+    <Reference Include="FuzzySharp, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\FuzzySharp.2.0.2\lib\net461\FuzzySharp.dll</HintPath>
+    </Reference>
+    <Reference Include="NPinyin.Core, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\NPinyin.Core.3.0.0\lib\net45\NPinyin.Core.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -75,11 +81,14 @@
     <Compile Include="ResizeElements\RStackPanel.cs" />
     <Compile Include="ResizeElements\WindowResizeHelper.cs" />
     <Compile Include="ResizeElements\RWrapPanel.cs" />
+    <Compile Include="SearchHelper.cs" />
     <Compile Include="SnapHelper.cs" />
     <Compile Include="ViewingHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WindowResizeHelper.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
