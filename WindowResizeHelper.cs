@@ -10,6 +10,7 @@ using System.Windows.Shapes;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using Point = System.Windows.Point;
 using Controls;
+using System.ComponentModel;
 
 namespace CodeHelper
 {
@@ -20,11 +21,18 @@ namespace CodeHelper
         double ResizeThickness = 4;
         double DragHeight = 20;
 
+        public event RoutedEventHandler BeforeHide = null;
+        public event RoutedEventHandler AfterHide = null;
+
+
+        public event RoutedEventHandler BeforeClose = null;
+        public event RoutedEventHandler AfterClose = null;
+
         /// <summary>
-        /// 对给定窗口注册缩放事件
+        /// 对给定窗口注册缩放事件(关闭按钮按下关闭窗口)
         /// </summary>
         /// <param name="window"></param>
-        public void RegisterWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, double resizeThickness = 4, double dragHeight = 20)
+        public void RegisterCloseWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, double resizeThickness = 4, double dragHeight = 20)
         {
             ResizeThickness = resizeThickness;
             this.DragHeight = dragHeight;
@@ -49,11 +57,75 @@ namespace CodeHelper
                 closeBtn.Click -= Close;
                 closeBtn.Click += Close;
             }
+            window.Closing -= ClosingEvent;
+            window.Closed -= ClosedEvent;
+            window.Closing += ClosingEvent;
+            window.Closed += ClosedEvent;
+        }
+
+        /// <summary>
+        /// 对给定窗口注册缩放事件(关闭按钮按下隐藏窗口)
+        /// </summary>
+        /// <param name="window"></param>
+        public void RegisterHideWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, double resizeThickness = 4, double dragHeight = 20)
+        {
+            ResizeThickness = resizeThickness;
+            this.DragHeight = dragHeight;
+            this.window = window;
+            // 为窗口的四个角落添加大小调整的触发器
+
+            window.PreviewMouseLeftButtonDown += Window_MouseDown;
+            window.PreviewMouseLeftButtonUp += Window_MouseUp;
+            window.MouseMove += Window_MouseMove;
+            if (minimunBtn != null)
+            {
+                minimunBtn.Click -= Minimize;
+                minimunBtn.Click += Minimize;
+            }
+            if (maximunBtn != null)
+            {
+                maximunBtn.Click -= Maximize;
+                maximunBtn.Click += Maximize;
+            }
+            if (closeBtn != null)
+            {
+                closeBtn.Click -= Hide;
+                closeBtn.Click += Hide;
+            }
+            window.Closing -= CloseHide;
+            window.Closing += CloseHide;
+        }
+
+        private void ClosingEvent(object sender, CancelEventArgs e)
+        {
+            BeforeClose?.Invoke(window, new RoutedEventArgs());
+        }
+
+        private void ClosedEvent(object sender, EventArgs e)
+        {
+            AfterClose?.Invoke(window, new RoutedEventArgs());
+        }
+
+        private void CloseHide(object sender, CancelEventArgs e)
+        {
+            BeforeHide?.Invoke(window, new RoutedEventArgs());
+            window.Hide();
+            AfterHide?.Invoke(window, new RoutedEventArgs());
+            e.Cancel = true;
+        }
+
+        private void Hide(object sender, RoutedEventArgs e)
+        {
+            BeforeHide?.Invoke(window, e);
+            window.Hide();
+            AfterHide?.Invoke(window, e);
         }
 
         private void Close(object sender, RoutedEventArgs e)
         {
+            BeforeClose?.Invoke(window, new RoutedEventArgs());
             window.Close();
+            AfterClose?.Invoke(window, new RoutedEventArgs());
         }
 
         /// <summary>
