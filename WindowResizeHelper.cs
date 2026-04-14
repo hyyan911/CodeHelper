@@ -32,7 +32,7 @@ namespace CodeHelper
         /// 对给定窗口注册缩放事件(关闭按钮按下关闭窗口)
         /// </summary>
         /// <param name="window"></param>
-        public void RegisterCloseWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, double resizeThickness = 4, double dragHeight = 20)
+        public void RegisterCloseWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, DecoratedButton pinBtn = null, double resizeThickness = 4, double dragHeight = 20)
         {
             ResizeThickness = resizeThickness;
             this.DragHeight = dragHeight;
@@ -44,16 +44,19 @@ namespace CodeHelper
             window.MouseMove += Window_MouseMove;
             if (minimunBtn != null)
             {
+                minimunBtn.Cursor = Cursors.Hand;
                 minimunBtn.Click -= Minimize;
                 minimunBtn.Click += Minimize;
             }
             if (maximunBtn != null)
             {
+                maximunBtn.Cursor = Cursors.Hand;
                 maximunBtn.Click -= Maximize;
                 maximunBtn.Click += Maximize;
             }
             if (closeBtn != null)
             {
+                closeBtn.Cursor = Cursors.Hand;
                 closeBtn.Click -= Close;
                 closeBtn.Click += Close;
             }
@@ -61,13 +64,19 @@ namespace CodeHelper
             window.Closed -= ClosedEvent;
             window.Closing += ClosingEvent;
             window.Closed += ClosedEvent;
+            if (pinBtn != null)
+            {
+                pinBtn.Cursor = Cursors.Hand;
+                pinBtn.Click -= PinEvent;
+                pinBtn.Click += PinEvent;
+            }
         }
 
         /// <summary>
         /// 对给定窗口注册缩放事件(关闭按钮按下隐藏窗口)
         /// </summary>
         /// <param name="window"></param>
-        public void RegisterHideWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, double resizeThickness = 4, double dragHeight = 20)
+        public void RegisterHideWindow(Window window, DecoratedButton minimunBtn, DecoratedButton maximunBtn, DecoratedButton closeBtn, DecoratedButton pinBtn = null, double resizeThickness = 4, double dragHeight = 20)
         {
             ResizeThickness = resizeThickness;
             this.DragHeight = dragHeight;
@@ -79,21 +88,45 @@ namespace CodeHelper
             window.MouseMove += Window_MouseMove;
             if (minimunBtn != null)
             {
+                minimunBtn.Cursor = Cursors.Hand;
                 minimunBtn.Click -= Minimize;
                 minimunBtn.Click += Minimize;
             }
             if (maximunBtn != null)
             {
+                maximunBtn.Cursor = Cursors.Hand;
                 maximunBtn.Click -= Maximize;
                 maximunBtn.Click += Maximize;
             }
             if (closeBtn != null)
             {
+                closeBtn.Cursor = Cursors.Hand;
                 closeBtn.Click -= Hide;
                 closeBtn.Click += Hide;
             }
             window.Closing -= CloseHide;
             window.Closing += CloseHide;
+            if (pinBtn != null)
+            {
+                pinBtn.Cursor = Cursors.Hand;
+                pinBtn.Click -= PinEvent;
+                pinBtn.Click += PinEvent;
+            }
+        }
+
+        private void PinEvent(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as DecoratedButton;
+            if (btn.KeepPressed == true)
+            {
+                btn.KeepPressed = false;
+                window.Topmost = false;
+            }
+            else
+            {
+                btn.KeepPressed = true;
+                window.Topmost = true;
+            }
         }
 
         private void ClosingEvent(object sender, CancelEventArgs e)
