@@ -470,6 +470,8 @@ namespace CodeHelper
         private double ParseDouble(string str)
         {
             if (str == "NaN" || str == "非数字") return double.NaN;
+            if (str == "正无穷大") return double.PositiveInfinity;
+            if (str == "负无穷大") return double.NegativeInfinity;
             else
             {
                 return double.Parse(str);
